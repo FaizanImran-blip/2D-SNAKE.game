@@ -16,8 +16,8 @@ int t_len;
 bool g;
 void set();
 void logic();
-void input();
-void draw();
+void inp();
+void dr();
 int main()
 {
 cout<<"|--------------------------------|"<<endl;
@@ -28,11 +28,11 @@ getch();
 set();
 while(!g)
 {
-    draw();
-    input();
+    dr();
+    inp();
     logic();
     Sleep(30);
-    g=true;
+    system("cls");
 }
 }
 void set()
@@ -45,7 +45,7 @@ void set()
     fy=rand()%h;
     s=0;
 }
-void draw()
+void dr()
 {
     system("cls");
     cout<<"\t\t";
@@ -102,11 +102,80 @@ void draw()
     cout<<endl;
     cout<<"\t\t\tScore:"<<"["<<s<<"]"<<endl;
 }
-void input()
+void inp()
 {
-//pending..
+  if(_kbhit())
+switch(getch())
+{
+    case 'a':
+    d=left;
+    break;
+    case 's':
+    d=down;
+    break;
+    case 'w':
+    d=up;
+    break;
+    case 'd':
+    d=right;
+    break;
+    default:
+    break;
+}
 }
 void logic()
 {
-//pending..
+    int px = tail_x[0];
+    int py = tail_y[0];
+    int p2x, p2y;
+    tail_x[0] = tx;
+    tail_y[0] = ty;
+    for(int i = 1; i < t_len; i++){
+        p2x = tail_x[i];
+        p2y = tail_y[i];
+        tail_x[i] = px;
+        tail_y[i] = py;
+        px = p2x;
+        py = p2y;
+}
+switch(d)
+{
+    case up:
+    ty--;
+    break;
+    case down:
+    ty++;
+    break;
+    case right:
+    tx++;
+    break;
+    case left:
+    tx--;
+    break;
+    default:
+    break;
+}
+if(tx >= w){
+    tx = 0;
+}
+else if(tx < 0){
+    tx = w - 1;
+}
+if(ty >= h){
+    ty = 0;
+}
+else if(ty < 0){
+    ty = h - 1;
+}
+for(int i = 0; i < t_len; i++){
+    if(tail_x[i] == tx && tail_y[i] == ty){
+        g = true;
+    }
+}
+if(tx == fx && ty == fy){
+    s += 10;
+    fx = rand()%w;
+    fy = rand()%h;
+    t_len++;
+}
 }
