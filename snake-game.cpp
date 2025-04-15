@@ -1,181 +1,174 @@
-#include<iostream>
-#include<Windows.h>
-#include<conio.h>
-#include<ctime>
-#include<cstdlib>
+#include <iostream>
+#include <Windows.h>
+#include <conio.h>
+#include <ctime>
 using namespace std;
-enum direct{st=0,left,right,up,down};
-direct d;
-int h=20;
-int w=20;
-int fx,fy;
-int tx,ty;
-int s;
-int tail_x[100],tail_y[100];
-int t_len;
-bool g;
-void set();
+
+enum Direction { stop = 0, left, right, up, down };
+Direction dir;
+
+const int width = 20;
+const int height = 20;
+
+int headX, headY, fruitX, fruitY, score;
+int tailX[100], tailY[100], tailLength;
+bool gameOver;
+
+void setup();
+void draw();
+void input();
 void logic();
-void inp();
-void dr();
-int main()
-{
-cout<<"|--------------------------------|"<<endl;
-cout<<"::::::::::::SNAKE GAME::::::::::::"<<endl;
-cout<<"|--------------------------------|"<<endl;
-cout<<"--Press enter to Start the game--"<<endl;
-getch();
-set();
-while(!g)
-{
-    dr();
-    inp();
-    logic();
-    Sleep(30);
-    system("cls");
-}
-}
-void set()
-{
-    d=st;
-    g=false;
-    tx=w/2;
-    ty=h/2;
-    fx=rand()%w;
-    fy=rand()%h;
-    s=0;
-}
-void dr()
-{
-    system("cls");
-    cout<<"\t\t";
-    for(int i=0;i<w-8;i++)
-    {
-        cout<<"||";
+
+int main() {
+    srand(time(0));
+    cout << "|--------------------------------|\n";
+    cout << ":::::::::::: SNAKE GAME ::::::::::\n";
+    cout << "|--------------------------------|\n";
+    cout << "-- Press any key to start the game --\n";
+    getch();
+
+    setup();
+
+    while (!gameOver) {
+        draw();
+        input();
+        logic();
+
+        int speed = 100 - (score / 10);
+        if (speed < 30) speed = 30;
+        Sleep(speed);
     }
-    cout<<endl;
-    for(int i=0;i<w;i++)
-    {
-        for(int j=0;j<h;j++)
-        {
-            if(j==0)
-            {
-                cout<<"\t\t||";
-            }
-            else if(i==tx&&j==ty)
-            {
-                cout<<"O";
-            }
-            else if(i==fx&&j==fy)
-            {
-                cout<<"*";
-            }
-            else{
-                bool p=false;
-                for(int k=0;k<t_len;k++)
-                {
-                    if(tail_x[k]==j&&tail_y[k]==i)
-                    {
-                        cout<<"O";
-                        p=true;
+
+    system("cls");
+    cout << "\n\n\t\tGAME OVER!\n";
+    cout << "\t\tFinal Score: " << score << "\n";
+    cout << "\t\tPress any key to exit...\n";
+    getch();
+
+    return 0;
+}
+
+void setup() {
+    dir = stop;
+    gameOver = false;
+    headX = width / 2;
+    headY = height / 2;
+    fruitX = rand() % width;
+    fruitY = rand() % height;
+    score = 0;
+    tailLength = 0;
+}
+
+void draw() {
+    system("cls");
+
+    cout << "\t\t";
+    for (int i = 0; i < width; i++) cout << "==";
+    cout << endl;
+
+    for (int i = 0; i < height; i++) {
+        cout << "\t\t||";
+        for (int j = 0; j < width; j++) {
+            if (i == headY && j == headX)
+                cout << "O";
+            else if (i == fruitY && j == fruitX)
+                cout << "*";
+            else {
+                bool printTail = false;
+                for (int k = 0; k < tailLength; k++) {
+                    if (tailX[k] == j && tailY[k] == i) {
+                        cout << "o";
+                        printTail = true;
+                        break;
                     }
-            
                 }
-                if (!p)
-                {
-                    cout<<" ";
-                } 
+                if (!printTail) cout << " ";
             }
-            if(j==w-1)
-             {
-              cout<<" ||";
-             }
         }
-        cout<<endl;
+        cout << "||" << endl;
     }
-    cout<<"\t\t";
-    for(int i=0;i<w-8;i++)
-    {
-        cout<<"||";
-    }
-    cout<<endl;
-    cout<<endl;
-    cout<<"\t\t\tScore:"<<"["<<s<<"]"<<endl;
+
+    cout << "\t\t";
+    for (int i = 0; i < width; i++) cout << "==";
+    cout << "\n\n\t\t\tScore: [" << score << "]\n";
 }
-void inp()
-{
-  if(_kbhit())
-switch(getch())
-{
-    case 'a':
-    d=left;
-    break;
-    case 's':
-    d=down;
-    break;
-    case 'w':
-    d=up;
-    break;
-    case 'd':
-    d=right;
-    break;
-    default:
-    break;
-}
-}
-void logic()
-{
-    int px = tail_x[0];
-    int py = tail_y[0];
-    int p2x, p2y;
-    tail_x[0] = tx;
-    tail_y[0] = ty;
-    for(int i = 1; i < t_len; i++){
-        p2x = tail_x[i];
-        p2y = tail_y[i];
-        tail_x[i] = px;
-        tail_y[i] = py;
-        px = p2x;
-        py = p2y;
-}
-switch(d)
-{
-    case up:
-    ty--;
-    break;
-    case down:
-    ty++;
-    break;
-    case right:
-    tx++;
-    break;
-    case left:
-    tx--;
-    break;
-    default:
-    break;
-}
-if(tx >= w){
-    tx = 0;
-}
-else if(tx < 0){
-    tx = w - 1;
-}
-if(ty >= h){
-    ty = 0;
-}
-else if(ty < 0){
-    ty = h - 1;
-}
-for(int i = 0; i < t_len; i++){
-    if(tail_x[i] == tx && tail_y[i] == ty){
-        g = true;
+
+void input() {
+    if (_kbhit()) {
+        switch (_getch()) {
+            case 'a':
+                if (dir != right) dir = left;
+                break;
+            case 'd':
+                if (dir != left) dir = right;
+                break;
+            case 'w':
+                if (dir != down) dir = up;
+                break;
+            case 's':
+                if (dir != up) dir = down;
+                break;
+        }
     }
 }
-if(tx == fx && ty == fy){
-    s += 10;
-    fx = rand()%w;
-    fy = rand()%h;
-    t_len++;
-}
+
+void logic() {
+    int prevX = tailX[0];
+    int prevY = tailY[0];
+    int tempX, tempY;
+
+    tailX[0] = headX;
+    tailY[0] = headY;
+
+    for (int i = 1; i < tailLength; i++) {
+        tempX = tailX[i];
+        tempY = tailY[i];
+        tailX[i] = prevX;
+        tailY[i] = prevY;
+        prevX = tempX;
+        prevY = tempY;
+    }
+
+    switch (dir) {
+        case left:  headX--; break;
+        case right: headX++; break;
+        case up:    headY--; break;
+        case down:  headY++; break;
+        default: break;
+    }
+
+    if (headX >= width) headX = 0;
+    else if (headX < 0) headX = width - 1;
+
+    if (headY >= height) headY = 0;
+    else if (headY < 0) headY = height - 1;
+
+    for (int i = 0; i < tailLength; i++) {
+        if (tailX[i] == headX && tailY[i] == headY)
+            gameOver = true;
+    }
+
+    if (headX == fruitX && headY == fruitY) {
+        score += 10;
+        tailLength++;
+
+        while (true) {
+            fruitX = rand() % width;
+            fruitY = rand() % height;
+            bool valid = true;
+
+            if (fruitX == headX && fruitY == headY) {
+                valid = false;
+            } else {
+                for (int i = 0; i < tailLength; i++) {
+                    if (tailX[i] == fruitX && tailY[i] == fruitY) {
+                        valid = false;
+                        break;
+                    }
+                }
+            }
+
+            if (valid) break;
+        }
+    }
 }
