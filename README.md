@@ -6,3 +6,4 @@ This is a simple **Snake 2D Game** implemented in C++. The objective of the game
 - Score counter.
 - Game-over when the snake collides with the walls or its own body.
 ---
+---
